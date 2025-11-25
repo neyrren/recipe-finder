@@ -17,6 +17,7 @@ import WelcomePage from './components/WelcomePage';
 import RecipeFinder from './components/RecipeFinder';
 import { LanguageProvider } from './contexts/LanguageProvider';
 import { useLanguage } from './hooks/useLanguage';
+import Footer from './components/Footer';
 
 // Theme toggle component
 function ThemeToggle() {
@@ -30,6 +31,7 @@ function ThemeToggle() {
     >
       {colorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
     </ActionIcon>
+    
   );
 }
 
