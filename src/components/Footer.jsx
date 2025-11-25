@@ -9,6 +9,7 @@ import {
   Divider,
   ActionIcon,
   Paper,
+  ThemeIcon, // Add this import
 } from '@mantine/core';
 import {
   IconBrandTwitter,
