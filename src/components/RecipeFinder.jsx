@@ -11,10 +11,14 @@ import {
   Text,
   Group,
   Chip,
-  ChipGroup,
+  Container,
+  Title,
+  Affix,
+  Transition,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconSearch } from '@tabler/icons-react';
+import { useWindowScroll } from '@mantine/hooks';
+import { IconSearch, IconArrowUp, IconChefHat } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import RecipeCard from './RecipeCard';
 import { useLanguage } from '../hooks/useLanguage';
@@ -23,6 +27,7 @@ const RecipeFinder = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [scroll, scrollTo] = useWindowScroll();
   const { t } = useLanguage();
 
   const form = useForm({
@@ -35,60 +40,39 @@ const RecipeFinder = () => {
 
   const categories = [
     { value: '', label: t('allCategories') },
-    { value: 'Beef', label: 'Beef' },
-    { value: 'Chicken', label: 'Chicken' },
-    { value: 'Dessert', label: 'Dessert' },
-    { value: 'Lamb', label: 'Lamb' },
-    { value: 'Miscellaneous', label: 'Miscellaneous' },
-    { value: 'Pasta', label: 'Pasta' },
-    { value: 'Pork', label: 'Pork' },
-    { value: 'Seafood', label: 'Seafood' },
-    { value: 'Vegetarian', label: 'Vegetarian' },
-    { value: 'Breakfast', label: 'Breakfast' },
-    { value: 'Starter', label: 'Starter' },
+    { value: 'Beef', label: '🍖 Beef' },
+    { value: 'Chicken', label: '🍗 Chicken' },
+    { value: 'Dessert', label: '🍰 Dessert' },
+    { value: 'Lamb', label: '🐑 Lamb' },
+    { value: 'Miscellaneous', label: '🍽️ Miscellaneous' },
+    { value: 'Pasta', label: '🍝 Pasta' },
+    { value: 'Pork', label: '🐖 Pork' },
+    { value: 'Seafood', label: '🐟 Seafood' },
+    { value: 'Vegetarian', label: '🥗 Vegetarian' },
+    { value: 'Breakfast', label: '🍳 Breakfast' },
+    { value: 'Starter', label: '🥘 Starter' },
   ];
 
   const areas = [
     { value: '', label: t('allRegions') },
-    { value: 'American', label: 'American' },
-    { value: 'British', label: 'British' },
-    { value: 'Canadian', label: 'Canadian' },
-    { value: 'Chinese', label: 'Chinese' },
-    { value: 'Dutch', label: 'Dutch' },
-    { value: 'Egyptian', label: 'Egyptian' },
-    { value: 'French', label: 'French' },
-    { value: 'Greek', label: 'Greek' },
-    { value: 'Indian', label: 'Indian' },
-    { value: 'Irish', label: 'Irish' },
-    { value: 'Italian', label: 'Italian' },
-    { value: 'Jamaican', label: 'Jamaican' },
-    { value: 'Japanese', label: 'Japanese' },
-    { value: 'Kenyan', label: 'Kenyan' },
-    { value: 'Malaysian', label: 'Malaysian' },
-    { value: 'Mexican', label: 'Mexican' },
-    { value: 'Moroccan', label: 'Moroccan' },
-    { value: 'Polish', label: 'Polish' },
-    { value: 'Portuguese', label: 'Portuguese' },
-    { value: 'Russian', label: 'Russian' },
-    { value: 'Spanish', label: 'Spanish' },
-    { value: 'Thai', label: 'Thai' },
-    { value: 'Tunisian', label: 'Tunisian' },
-    { value: 'Turkish', label: 'Turkish' },
-    { value: 'Unknown', label: 'Unknown' },
-    { value: 'Vietnamese', label: 'Vietnamese' },
+    { value: 'American', label: '🇺🇸 American' },
+    { value: 'British', label: '🇬🇧 British' },
+    { value: 'Canadian', label: '🇨🇦 Canadian' },
+    { value: 'Chinese', label: '🇨🇳 Chinese' },
+    { value: 'French', label: '🇫🇷 French' },
+    { value: 'Greek', label: '🇬🇷 Greek' },
+    { value: 'Indian', label: '🇮🇳 Indian' },
+    { value: 'Italian', label: '🇮🇹 Italian' },
+    { value: 'Japanese', label: '🇯🇵 Japanese' },
+    { value: 'Mexican', label: '🇲🇽 Mexican' },
+    { value: 'Spanish', label: '🇪🇸 Spanish' },
+    { value: 'Thai', label: '🇹🇭 Thai' },
+    { value: 'Vietnamese', label: '🇻🇳 Vietnamese' },
   ];
 
   const popularRecipes = [
-    'Pasta',
-    'Chicken',
-    'Pizza',
-    'Cake',
-    'Salad',
-    'Soup',
-    'Rice',
-    'Fish',
-    'Beef',
-    'Dessert'
+    'Pasta', 'Chicken', 'Pizza', 'Cake', 'Salad', 
+    'Soup', 'Rice', 'Fish', 'Beef', 'Dessert'
   ];
 
   const performSearch = async (values, updateUrl = true) => {
@@ -144,6 +128,7 @@ const RecipeFinder = () => {
           title: t('noRecipesFound'),
           message: 'Try different search terms',
           color: 'yellow',
+          icon: <IconChefHat size={16} />,
         });
       }
     } catch (error) {
@@ -194,97 +179,171 @@ const RecipeFinder = () => {
   }, []);
 
   return (
-    <Stack spacing="xl">
-      {/* Search Form */}
-      <Paper p="md" shadow="sm" withBorder>
-        <form onSubmit={form.onSubmit(searchRecipes)}>
-          <Grid gutter="md">
-            <Grid.Col xs={12} sm={4}>
-              <TextInput
-                label={t('searchRecipes')}
-                placeholder={t('searchPlaceholder')}
-                icon={<IconSearch size={16} />}
-                {...form.getInputProps('search')}
-              />
-            </Grid.Col>
-            <Grid.Col xs={6} sm={4}>
-              <Select
-                label={t('category')}
-                data={categories}
-                {...form.getInputProps('category')}
-              />
-            </Grid.Col>
-            <Grid.Col xs={6} sm={4}>
-              <Select
-                label={t('cuisine')}
-                data={areas}
-                {...form.getInputProps('area')}
-              />
-            </Grid.Col>
-            <Grid.Col xs={12}>
-              <Group>
-                <Button type="submit" loading={loading}>
-                  {t('searchRecipes')}
+    <Container size="xl">
+      <Stack spacing="xl">
+        {/* Header */}
+        <Stack spacing="sm" align="center" mb="xl">
+          <Title order={1} style={{ 
+            background: 'linear-gradient(135deg, #228BE6 0%, #15AABF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textAlign: 'center'
+          }}>
+            Discover Amazing Recipes
+          </Title>
+          <Text size="lg" color="dimmed" ta="center">
+            Find your next favorite meal from thousands of recipes
+          </Text>
+        </Stack>
+
+        {/* Search Form */}
+        <Paper 
+          p="xl" 
+          shadow="md" 
+          radius="lg"
+          style={{
+            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+            border: '1px solid #dee2e6'
+          }}
+        >
+          <form onSubmit={form.onSubmit(searchRecipes)}>
+            <Grid gutter="md">
+              <Grid.Col xs={12} sm={5}>
+                <TextInput
+                  label="Search Recipes"
+                  placeholder="What are you craving today?"
+                  icon={<IconSearch size={18} />}
+                  size="md"
+                  radius="md"
+                  {...form.getInputProps('search')}
+                />
+              </Grid.Col>
+              <Grid.Col xs={6} sm={3}>
+                <Select
+                  label="Category"
+                  data={categories}
+                  size="md"
+                  radius="md"
+                  {...form.getInputProps('category')}
+                />
+              </Grid.Col>
+              <Grid.Col xs={6} sm={3}>
+                <Select
+                  label="Cuisine"
+                  data={areas}
+                  size="md"
+                  radius="md"
+                  {...form.getInputProps('area')}
+                />
+              </Grid.Col>
+              <Grid.Col xs={12} sm={1}>
+                <Button 
+                  type="submit" 
+                  loading={loading}
+                  size="md"
+                  radius="md"
+                  style={{ marginTop: '24px' }}
+                  fullWidth
+                >
+                  Search
                 </Button>
-                <Button variant="outline" onClick={showRandomRecipes}>
-                  {t('showRandom')}
+              </Grid.Col>
+            </Grid>
+          </form>
+        </Paper>
+
+        {/* Popular Recipes Quick Access */}
+        <Paper p="xl" radius="lg" withBorder>
+          <Text size="xl" weight={700} mb="md">
+            🔥 Popular Searches
+          </Text>
+          <Group spacing="sm">
+            {popularRecipes.map((recipe) => (
+              <Chip
+                key={recipe}
+                value={recipe}
+                variant="filled"
+                color="blue"
+                radius="md"
+                size="md"
+                onClick={() => handlePopularRecipeClick(recipe)}
+                style={{ cursor: 'pointer' }}
+              >
+                {recipe}
+              </Chip>
+            ))}
+          </Group>
+        </Paper>
+
+        {/* Results */}
+        <div style={{ position: 'relative', minHeight: 400 }}>
+          <LoadingOverlay 
+            visible={loading} 
+            overlayBlur={2}
+            loaderProps={{ size: 'lg', color: 'blue' }}
+          />
+          
+          {recipes.length > 0 ? (
+            <>
+              <Group position="apart" mb="lg">
+                <Text size="xl" weight={600}>
+                  {recipes.length} Recipes Found
+                </Text>
+                <Button 
+                  variant="light" 
+                  onClick={showRandomRecipes}
+                  leftIcon={<IconChefHat size={16} />}
+                >
+                  Show Random
                 </Button>
               </Group>
-            </Grid.Col>
-          </Grid>
-        </form>
-      </Paper>
+              <Grid gutter="xl">
+                {recipes.map((recipe) => (
+                  <Grid.Col key={recipe.idMeal} xs={12} sm={6} lg={4}>
+                    <RecipeCard recipe={recipe} />
+                  </Grid.Col>
+                ))}
+              </Grid>
+            </>
+          ) : (
+            !loading && (
+              <Paper p="xl" style={{ textAlign: 'center' }} radius="lg">
+                <IconChefHat size={64} color="#ccc" style={{ margin: '0 auto 20px' }} />
+                <Text size="xl" color="dimmed" mb="md">
+                  No recipes found matching your criteria
+                </Text>
+                <Text color="dimmed" mb="xl">
+                  Try adjusting your search terms or browse random recipes
+                </Text>
+                <Button 
+                  variant="light" 
+                  onClick={showRandomRecipes}
+                  size="lg"
+                >
+                  Show Random Recipes
+                </Button>
+              </Paper>
+            )
+          )}
+        </div>
+      </Stack>
 
-      {/* Popular Recipes Quick Access */}
-      <Paper p="md" withBorder>
-        <Text size="lg" weight={600} mb="sm">
-          {t('popularSearches')}:
-        </Text>
-        <ChipGroup>
-          {popularRecipes.map((recipe) => (
-            <Chip
-              key={recipe}
-              value={recipe}
-              variant="outline"
-              onClick={() => handlePopularRecipeClick(recipe)}
-              style={{ cursor: 'pointer' }}
+      {/* Scroll to top button */}
+      <Affix position={{ bottom: 20, right: 20 }}>
+        <Transition transition="slide-up" mounted={scroll.y > 0}>
+          {(transitionStyles) => (
+            <Button
+              leftIcon={<IconArrowUp size={16} />}
+              style={transitionStyles}
+              onClick={() => scrollTo({ y: 0 })}
+              radius="md"
             >
-              {recipe}
-            </Chip>
-          ))}
-        </ChipGroup>
-      </Paper>
-
-      {/* Results */}
-      <div style={{ position: 'relative' }}>
-        <LoadingOverlay visible={loading} />
-        
-        {recipes.length > 0 ? (
-          <Grid gutter="lg">
-            {recipes.map((recipe) => (
-              <Grid.Col key={recipe.idMeal} xs={12} sm={6} lg={4}>
-                <RecipeCard recipe={recipe} />
-              </Grid.Col>
-            ))}
-          </Grid>
-        ) : (
-          !loading && (
-            <Paper p="xl" style={{ textAlign: 'center' }}>
-              <Text color="dimmed" size="lg">
-                {t('noRecipesFound')}
-              </Text>
-              <Button 
-                variant="light" 
-                onClick={showRandomRecipes}
-                mt="md"
-              >
-                {t('showRandom')}
-              </Button>
-            </Paper>
-          )
-        )}
-      </div>
-    </Stack>
+              Scroll to top
+            </Button>
+          )}
+        </Transition>
+      </Affix>
+    </Container>
   );
 };
 
