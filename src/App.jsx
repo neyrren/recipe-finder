@@ -9,6 +9,7 @@ import {
   ActionIcon,
   useMantineColorScheme,
   Select,
+  Box,
 } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
@@ -31,7 +32,6 @@ function ThemeToggle() {
     >
       {colorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
     </ActionIcon>
-    
   );
 }
 
@@ -97,16 +97,28 @@ function AppContent() {
           height: 70,
         }}
         padding="md"
+        footer={{
+          height: 60,
+        }}
       >
         <Header />
-        <AppShell.Main>
-          <Container size="lg" py="xl">
+        
+        <AppShell.Main style={{ 
+          minHeight: 'calc(100vh - 130px)', // Adjust for header and footer height
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <Container size="lg" py="xl" style={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<WelcomePage />} />
               <Route path="/recipes" element={<RecipeFinder />} />
             </Routes>
           </Container>
         </AppShell.Main>
+        
+        <AppShell.Footer>
+          <Footer />
+        </AppShell.Footer>
       </AppShell>
     </Router>
   );
